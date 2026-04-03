@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, BadgeCheck, CheckCircle, CircleDashed, CreditCard, Landmark, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -28,7 +28,7 @@ function page() {
     setError("")
     try {
       const { data } = await axios.post("/api/partner/onboarding/bank", {
-        accountHolder, accountNumber, ifsc:sanitizedIfsc, mobileNumber, upi
+        accountHolder, accountNumber, ifsc: sanitizedIfsc, mobileNumber, upi
       })
       console.log(data)
       setLoading(false)
@@ -38,6 +38,24 @@ function page() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    const handleGetBank = async () => {
+      try {
+        const { data } = await axios.get("/api/partner/onboarding/bank")
+        console.log(data)
+        setAccountHolder(data.partnerBank.accountHolder || "")
+        setAccountNumber(data.partnerBank.accountNumber || "")
+        setIfsc(data.partnerBank.ifsc || "")
+        setMobileNumber(data.mobileNumber || "")
+        setupi(data.partnerBank.upi || "")
+      } catch (error: any) {
+        setError(error?.response?.data?.message || "something went wrong")
+        console.log(error)
+      }
+    }
+    handleGetBank()
+  },[])
 
   return (
     <div className='min-h-screen bg-white flex items-center justify-center px-4'>
@@ -58,64 +76,64 @@ function page() {
             <label htmlFor='ahn' className='text-xs font-semibold text-gray-500'>Account Holder Name</label>
             <div className='flex items-center gap-2 mt-2'>
               <div className='text-gray-400'><BadgeCheck /></div>
-              <input 
-                type="text" 
-                id="ahn" 
-                placeholder="As per bank records" 
-                className={`flex-1 border-b pb-2 text-sm focus:outline-none ${!isNameValid && accountHolder.length>0?"border-red-300 focus:border-red-500":"border-gray-300 focus:border-black"}`}
-                value={accountHolder} 
-                onChange={(e) => setAccountHolder(e.target.value)} 
+              <input
+                type="text"
+                id="ahn"
+                placeholder="As per bank records"
+                className={`flex-1 border-b pb-2 text-sm focus:outline-none ${!isNameValid && accountHolder.length > 0 ? "border-red-300 focus:border-red-500" : "border-gray-300 focus:border-black"}`}
+                value={accountHolder}
+                onChange={(e) => setAccountHolder(e.target.value)}
               />
             </div>
-            {!isNameValid && accountHolder.length>0 && <p className='mt-1 text-xs text-red-500'>Minimum 3 characters required</p>}
+            {!isNameValid && accountHolder.length > 0 && <p className='mt-1 text-xs text-red-500'>Minimum 3 characters required</p>}
           </div>
 
           <div>
             <label htmlFor='ban' className='text-xs font-semibold text-gray-500'>Bank Account Number</label>
             <div className='flex items-center gap-2 mt-2'>
               <div className='text-gray-400'><CreditCard /></div>
-              <input 
-                type="text" 
-                id="ban" 
-                placeholder="Enter Account Number" 
-                className={`flex-1 border-b pb-2 text-sm focus:outline-none ${!isAccountValid && accountNumber.length>0?"border-red-300 focus:border-red-500":"border-gray-300 focus:border-black"}`}
-                value={accountNumber} 
-                onChange={(e) => setAccountNumber(e.target.value)} 
+              <input
+                type="text"
+                id="ban"
+                placeholder="Enter Account Number"
+                className={`flex-1 border-b pb-2 text-sm focus:outline-none ${!isAccountValid && accountNumber.length > 0 ? "border-red-300 focus:border-red-500" : "border-gray-300 focus:border-black"}`}
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
               />
             </div>
-            {!isAccountValid && accountNumber.length>0 && <p className='mt-1 text-xs text-red-500'>Account Number must be atleast of 9 digits</p>}
+            {!isAccountValid && accountNumber.length > 0 && <p className='mt-1 text-xs text-red-500'>Account Number must be atleast of 9 digits</p>}
           </div>
 
           <div>
             <label htmlFor='ic' className='text-xs font-semibold text-gray-500'>IFSC Code</label>
             <div className='flex items-center gap-2 mt-2'>
               <div className='text-gray-400'><Landmark /></div>
-              <input 
-                type="text" 
-                id="ic" 
-                placeholder="HDFC000123" 
-                className={`flex-1 border-b pb-2 text-sm focus:outline-none ${!isIfscValid && ifsc.length>0?"border-red-300 focus:border-red-500":"border-gray-300 focus:border-black"}`}
-                value={ifsc.toUpperCase()} 
-                onChange={(e) => setIfsc(e.target.value)} 
+              <input
+                type="text"
+                id="ic"
+                placeholder="HDFC000123"
+                className={`flex-1 border-b pb-2 text-sm focus:outline-none ${!isIfscValid && ifsc.length > 0 ? "border-red-300 focus:border-red-500" : "border-gray-300 focus:border-black"}`}
+                value={ifsc.toUpperCase()}
+                onChange={(e) => setIfsc(e.target.value)}
               />
             </div>
-            {!isIfscValid && ifsc.length>0 && <p className='mt-1 text-xs text-red-500'>Invalid IFSC Code</p>}
+            {!isIfscValid && ifsc.length > 0 && <p className='mt-1 text-xs text-red-500'>Invalid IFSC Code</p>}
           </div>
 
           <div>
             <label htmlFor='mn' className='text-xs font-semibold text-gray-500'>Mobile Number</label>
             <div className='flex items-center gap-2 mt-2'>
               <div className='text-gray-400'><Phone /></div>
-              <input 
-                type="text" 
-                id="mn" 
-                placeholder="10 digit mobile number" 
-                className={`flex-1 border-b pb-2 text-sm focus:outline-none ${!isMobileValid && mobileNumber.length>0?"border-red-300 focus:border-red-500":"border-gray-300 focus:border-black"}`}
-                value={mobileNumber} 
-                onChange={(e) => setMobileNumber(e.target.value)} 
+              <input
+                type="text"
+                id="mn"
+                placeholder="10 digit mobile number"
+                className={`flex-1 border-b pb-2 text-sm focus:outline-none ${!isMobileValid && mobileNumber.length > 0 ? "border-red-300 focus:border-red-500" : "border-gray-300 focus:border-black"}`}
+                value={mobileNumber}
+                onChange={(e) => setMobileNumber(e.target.value)}
               />
             </div>
-            {!isMobileValid && mobileNumber.length>0 && <p className='mt-1 text-xs text-red-500'>Enter a valid 10 digit mobile number</p>}
+            {!isMobileValid && mobileNumber.length > 0 && <p className='mt-1 text-xs text-red-500'>Enter a valid 10 digit mobile number</p>}
           </div>
 
           <div>

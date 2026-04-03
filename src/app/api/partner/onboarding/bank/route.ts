@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
         await connectDb()
         const session = await auth()
         if (!session || !session.user?.email) {
-            return Response.json({ message: "Unauthorized" }, { status: 400 })
+            return Response.json({ message: "Unauthorized" }, { status: 401 })
         }
 
         const user = await User.findOne({ email: session.user.email })
@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
 
         const partnerBank=await PartnerBank.findOneAndUpdate(
             {owner:user._id},
-            {
+            {   
+                owner:user._id,
                 accountHolder,
                 accountNumber,
                 ifsc,
@@ -50,7 +51,7 @@ export async function GET(req:NextRequest){
         await connectDb()
         const session = await auth()
         if (!session || !session.user?.email) {
-            return Response.json({ message: "Unauthorized" }, { status: 400 })
+            return Response.json({ message: "Unauthorized" }, { status: 401 })
         }
 
         const user = await User.findOne({ email: session.user.email })
@@ -60,10 +61,10 @@ export async function GET(req:NextRequest){
 
         const partnerBank=await PartnerBank.findOne({owner:user._id})
         if(partnerBank){
-            return Response.json(partnerBank, { status: 200 })
+            return Response.json({mobileNumber:user.mobileNumber,partnerBank}, { status: 200 })
         }
         else{
-            return null
+            return Response.json({ message: "No bank details found" }, { status: 404 })
         }
     }catch(error){
         return Response.json({ message: `Get Partner Bank Error ${error}` }, { status: 500 })

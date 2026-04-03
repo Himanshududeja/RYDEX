@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Bike, Car, CircleDashed, Package, Truck } from 'lucide-react'
@@ -19,8 +19,8 @@ function VehiclePage() {
     const [vehicleType, setVehicleType] = useState("")
     const [vehicleNumber, setVehicleNumber] = useState("")
     const [vehicleModel, setVehicleModel] = useState("")
-    const [error,setError] = useState("")
-    const [loading,setLoading] = useState(false)
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
     async function handleVehicle() {
         setError("")
         try {
@@ -31,11 +31,25 @@ function VehiclePage() {
                 vehicleModel
             })
             setLoading(false)
-        } catch (error:any) {
+        } catch (error: any) {
             setError(error?.reponse?.data?.message ?? "something went wrong")
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        async function handleGetVehicle() {
+            try {
+                const { data } = await axios.get("/api/partner/onboarding/vehicle")
+                setVehicleType(data.type)
+                setVehicleNumber(data.number)
+                setVehicleModel(data.vehicleModel)
+            } catch (error: any) {
+                console.log(error)
+            }
+        }
+        handleGetVehicle()
+    },[])
     return (
         <div className='min-h-screen bg-white flex items-center justify-center px-4'>
             <motion.div
@@ -57,25 +71,25 @@ function VehiclePage() {
                         <p className='text-xs font-semibold text-gray-500 mb-3'>Vehicle Type</p>
                         <div className='grid grid-cols-2 sm:grid-cols-3 gap-3'>
                             {VEHICLES.map((v, i) => {
-                                const Icon=v.icon
-                                const active=vehicleType==v.id
-                                return(
+                                const Icon = v.icon
+                                const active = vehicleType == v.id
+                                return (
                                     <motion.div
                                         key={v.id}
-                                        whileHover={{scale:1.05}}
-                                        whileTap={{scale:0.96}}
-                                        onClick={()=>setVehicleType(v.id)}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.96 }}
+                                        onClick={() => setVehicleType(v.id)}
                                         className={`rounded-2xl border p-4 flex flex-col items-center gap-2 transition
-                                            ${active?"bg-black text-white border-black":"border-gray-200 hover:border-black"}`}
+                                            ${active ? "bg-black text-white border-black" : "border-gray-200 hover:border-black"}`}
                                     >
                                         <div className={`w-11 h-11 rounded-full flex items-center justify-center 
-                                            ${active?"bg-white text-black":"bg-black text-white"}`}>
-                                            <Icon/>
+                                            ${active ? "bg-white text-black" : "bg-black text-white"}`}>
+                                            <Icon />
                                         </div>
                                         <div className='text-sm font-semibold'>
                                             {v.label}
                                         </div>
-                                        <p className={`text-xs ${active ? "text-gray-300":"text-gray-500"}`}>{v.desc}</p>
+                                        <p className={`text-xs ${active ? "text-gray-300" : "text-gray-500"}`}>{v.desc}</p>
                                     </motion.div>
                                 )
                             })}
@@ -84,37 +98,37 @@ function VehiclePage() {
 
                     <div>
                         <label htmlFor="vn" className='text-xs font-semibold text-gray-500'>Vehicle Number</label>
-                        <input 
+                        <input
                             type="text"
                             onChange={(e) => setVehicleNumber(e.target.value.toUpperCase())}
                             value={vehicleNumber}
                             placeholder="DL6SBN1341"
-                            id='vn' 
+                            id='vn'
                             className='mt-2 w-full border-b border-gray-300 pb-2 text-sm focus:outline-none focus:border-black transition'
                         />
                     </div>
 
                     <div>
                         <label htmlFor="vm" className='text-xs font-semibold text-gray-500'>Vehicle Model</label>
-                        <input 
+                        <input
                             type="text"
                             onChange={(e) => setVehicleModel(e.target.value)}
                             value={vehicleModel}
                             placeholder="Tata Ace"
-                            id='vm' 
+                            id='vm'
                             className='mt-2 w-full border-b border-gray-300 pb-2 text-sm focus:outline-none focus:border-black transition'
                         />
                     </div>
                 </div>
                 {error && <p className='text-red-500 mt-4'>*{error}</p>}
                 <motion.button
-                    whileHover={{scale:1.02}}
+                    whileHover={{ scale: 1.02 }}
                     disabled={loading}
-                    whileTap={{scale:0.97}}
+                    whileTap={{ scale: 0.97 }}
                     className='mt-8 w-full h-14 rounded-2xl bg-black text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-40 transition'
                     onClick={handleVehicle}
                 >
-                    {loading?<CircleDashed className='text-white animate-spin'/>:"Continue"}
+                    {loading ? <CircleDashed className='text-white animate-spin' /> : "Continue"}
                 </motion.button>
 
             </motion.div>

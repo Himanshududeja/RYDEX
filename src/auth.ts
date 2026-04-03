@@ -67,14 +67,24 @@ Google({
         }
         return true;
     },
-    async jwt({token,user}){
-        if(user){
-            token.name=user.name;
-            token.id=user.id;
-            token.email=user.email;
-            token.role=user.role;
-        }
-        return token;
+    async jwt({ token, user }) {
+      // On login
+      if (user) {
+        token.name = user.name
+        token.id = user.id
+        token.email = user.email
+        token.role = user.role
+      }
+
+      // 🔥 Always sync latest role from DB
+      await connectDb()
+      const dbUser = await User.findById(token.id)
+
+      if (dbUser) {
+        token.role = dbUser.role
+      }
+
+      return token
     },
     async session({session,token}){
         if(token){
