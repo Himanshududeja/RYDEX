@@ -145,7 +145,6 @@ function page() {
           </div>
         </div>
 
-        {error && <p className='text-red-500 mt-4'>*{error}</p>}
         <div className='mt-6 flex items-start gap-3 text-xs text-gray-500'>
           <CheckCircle size={16} className='mt-0.5' />
           <p>Bank details are verified before first payout.

@@ -10,6 +10,7 @@ export interface IUser extends Document{     //extends Document means it will ha
     otpExpiresAt?: Date;    //? means optional field
     partnerOnBoardingSteps:number
     mobileNumber?:string
+    partnerStatus:"pending" | "approved" | "rejected"
     createdAt: Date
     updatedAt: Date
 }
@@ -21,6 +22,7 @@ const userSchema = new mongoose.Schema<IUser>({   //<IUser> is the type of the d
     isEmailVerified: {type: Boolean, default: false},
     partnerOnBoardingSteps:{type:Number, min:0, max:8, default:0},
     mobileNumber:{type:String},
+    partnerStatus:{type:String,enum:["pending","approved","rejected"],default:"pending"},
     otp: {type: String},
     otpExpiresAt: {type: Date}
 },{timestamps: true});

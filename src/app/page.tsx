@@ -10,8 +10,24 @@ export default async function Home() {
   console.log(session)
   return (
     <div className="w-full min-h-screen bg-white">
-      <Nav />
-      {session?.user?.role=="partner"?<PartnerDashboard/>:(session?.user?.role=="admin"?<AdminDashboard/>:<PublicHome/>)}
+      
+      {session?.user?.role=="partner"
+        ?
+        <>
+          <Nav/>
+          <PartnerDashboard/>
+        </>
+        :
+        (session?.user?.role=="admin"
+        ?
+        <AdminDashboard/>
+          :
+        <>
+          <Nav/>
+          <PublicHome/>
+        </>
+        )
+      }
       <Footer />
     </div>
   );
