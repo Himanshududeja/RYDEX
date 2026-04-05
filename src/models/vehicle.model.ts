@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 type vehicleType="bike" | "car" | "truck" | "van" | "auto"
 
-interface IVehicle{
+export interface IVehicle{
     owner: mongoose.Types.ObjectId,
     type: vehicleType,
     vehicleModel: string,
@@ -17,6 +17,7 @@ interface IVehicle{
     createdAt: Date,
     updatedAt: Date
 }
+
 
 const vehicleSchema=new mongoose.Schema<IVehicle>({
     owner:{type: mongoose.Schema.Types.ObjectId, ref:"User", required:true},

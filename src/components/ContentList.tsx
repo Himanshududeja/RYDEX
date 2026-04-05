@@ -1,9 +1,11 @@
 'use client'
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2, User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 function ContentList({ data, type }: any) {
+    const router=useRouter()
     if (data?.length == 0) {
         return (
             <motion.div
@@ -33,6 +35,7 @@ function ContentList({ data, type }: any) {
                 const email=item.email
                 return(
                     <motion.div
+                        key={email || index}
                         initial={{opacity:0,y:10}}
                         animate={{opacity:1,y:0}}
                         transition={{delay:index*0.05}}
@@ -52,6 +55,9 @@ function ContentList({ data, type }: any) {
                             <motion.button
                                 whileTap={{scale:1.96}}
                                 className='flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-sm font-semibold transition-colors'
+                                onClick={()=>{
+                                    type=="partner"?router.push(`/admin/reviews/partner/${item._id}`):router.push(`/admin/reviews/partner/${item._id}`)
+                                }}
                             >
                                 Review <ArrowRight size={15}/>
                             </motion.button>
