@@ -11,6 +11,7 @@ export interface IUser extends Document{     //extends Document means it will ha
     partnerOnBoardingSteps:number
     mobileNumber?:string
     partnerStatus:"pending" | "approved" | "rejected"
+    rejectionReason?:string
     createdAt: Date
     updatedAt: Date
 }
@@ -23,6 +24,7 @@ const userSchema = new mongoose.Schema<IUser>({   //<IUser> is the type of the d
     partnerOnBoardingSteps:{type:Number, min:0, max:8, default:0},
     mobileNumber:{type:String},
     partnerStatus:{type:String,enum:["pending","approved","rejected"],default:"pending"},
+    rejectionReason:{type:String},
     otp: {type: String},
     otpExpiresAt: {type: Date}
 },{timestamps: true});

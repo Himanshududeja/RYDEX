@@ -36,9 +36,8 @@ export async function POST(req: NextRequest) {
         )
 
         user.mobileNumber=mobileNumber
-        if(user.partnerOnBoardingSteps<3){
-            user.partnerOnBoardingSteps=3;
-        }
+        user.partnerOnBoardingSteps=3;
+        user.partnerStatus="pending"
         await user.save()
         return Response.json(partnerBank, { status: 201 })
     } catch (error) {
