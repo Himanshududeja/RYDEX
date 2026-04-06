@@ -34,6 +34,7 @@ export async function GET(
             return Response.json({message:"partner did not complete onboarding step"},{status:400})
         }
         partner.partnerStatus="approved"
+        partner.videoKycStatus="pending"
         partner.partnerOnBoardingSteps=4
         await partner.save()
         partnerDocs.status="approved"

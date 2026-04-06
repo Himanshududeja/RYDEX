@@ -7,7 +7,7 @@ import { IUser } from '@/models/user.model'
 import { IVehicle } from '@/models/vehicle.model'
 import { AnimatePresence, motion } from 'framer-motion'
 import axios from 'axios'
-import { ArrowLeft, Car, CheckCircle, Clock, FileText, Landmark, ShieldCheck, XCircle } from 'lucide-react'
+import { ArrowLeft, Car, CheckCircle, CircleDashed, Clock, FileText, Landmark, ShieldCheck, XCircle } from 'lucide-react'
 import { div } from 'motion/react-client'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -24,6 +24,8 @@ function page() {
     const [showApprove, setShowApprove] = useState(false)
     const [showReject, setShowReject] = useState(false)
     const [rejectionReason,setRejectionReason] = useState("")
+    const [approveLoading,setApproveLoading] = useState(false)
+    const [rejectLoading,setRejectLoading] = useState(false)
     const router = useRouter()
     const handleGetPartner = async () => {
         try {
@@ -50,22 +52,31 @@ function page() {
     }
 
     const handleApprove = async ()=>{
+        setApproveLoading(true)
         try{
             const {data} = await axios.get(`/api/admin/reviews/partner/${id}/approve`)
             console.log(data)
+            setApproveLoading(false)
+            router.push("/")
         }catch(error){
             console.log(error)
+            setApproveLoading(false)
         }
     }
 
     const handleReject = async ()=>{
+        setRejectLoading(true)
         try{
             const {data} = await axios.post(`/api/admin/reviews/partner/${id}/reject`,{
                 rejectionReason
             })
             console.log(data)
+            setRejectLoading(false)
+            router.push("/")
+            router.refresh() 
         }catch(error){
             console.log(error)
+            setRejectLoading(false)
         }
     }
     return (
@@ -189,7 +200,11 @@ function page() {
                             <p className='text-sm text-gray-500 mt-2'>Confirm all information has been verified.</p>
                             <div className='flex gap-3 mt-6'>
                                 <button className='flex-1 py-2 rounded-xl border' onClick={() => setShowApprove(false)}>Cancel</button>
-                                <button className='flex-1 py-2 rounded-xl bg-black text-white' onClick={handleApprove}>Yes, Approve</button>
+                                <button className='flex-1 flex items-center justify-center py-2 rounded-xl bg-black text-white' 
+                                    onClick={handleApprove}
+                                    disabled={approveLoading}>
+                                    {approveLoading? <CircleDashed className='text-white animate-spin'/>:"Yes, Approve"}
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -220,7 +235,11 @@ function page() {
                             </p>
                             <div className='flex gap-3 mt-6'>
                                 <button className='flex-1 py-2 rounded-xl border' onClick={() => setShowReject(false)}>Cancel</button>
-                                <button className='flex-1 py-2 rounded-xl bg-black text-white' onClick={handleReject}>Reject</button>
+                                <button className='flex-1 py-2 flex items-center justify-center rounded-xl bg-black text-white' 
+                                    onClick={handleReject}
+                                    disabled={rejectLoading}>
+                                    {rejectLoading? <CircleDashed className='text-white animate-spin'/>:"Reject"}
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>
