@@ -3,12 +3,13 @@ import { RootState } from '@/redux/store';
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion'
-import { Check, Clock, Lock } from 'lucide-react';
+import { Check, CheckCircle, Clock, Lock, Video } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import RejectionCard from './RejectionCard';
 import StatusCard from './StatusCard';
 import axios from 'axios';
 import { setUserData } from '@/redux/userSlice';
+import ActionCard from './ActionCard';
 
 type Step = {
     id: number,
@@ -97,7 +98,7 @@ function PartnerDashboard() {
                                         <div className={`w-14 h-14 rounded-full flex items-center justify-center border-2
                                             ${completed ? "bg-black text-white border-black"
                                                 : active ? "border-black bg-white"
-                                                : "border-gray-300 text-gray-400 bg-white"}`}
+                                                    : "border-gray-300 text-gray-400 bg-white"}`}
                                         >
                                             {completed ? <Check /> : locked ? <Lock /> : s.id}
                                         </div>
@@ -127,6 +128,37 @@ function PartnerDashboard() {
                         desc="Admin is verifying your documents."
                     />
                 )}
+
+                {
+                    activeStep == 5 && (
+                        userData?.videoKycStatus === "approved" ? (
+                            <StatusCard
+                                icon={<CheckCircle size={18} />}
+                                title={"Video KYC Approved"}
+                                desc={"You can now proceed to pricing."}
+                            />
+                        ) : userData?.videoKycStatus === "rejected" ? (
+                            <RejectionCard
+                                title="Video KYC Rejected"
+                                reason={userData?.VideoKycRejectionReason}
+                                actionLabel="Request Again"
+                            />
+                        ) : userData?.videoKycStatus === "in_progress" && userData?.videoKycRoomId ? (
+                            <ActionCard
+                                icon={<Video size={18} />}
+                                title={"Admin Started Video KYC"}
+                                button={"Join Call"}
+                                onClick={() => router.push(`/video-kyc/${userData.videoKycRoomId}`)}
+                            />
+                        ) : (
+                            <StatusCard
+                                icon={<Clock size={20} />}
+                                title="Witing for Admin"
+                                desc="Admin will initiate Video KYC shortly."
+                            />
+                        )
+                    )
+                }
             </div>
         </div>
     )

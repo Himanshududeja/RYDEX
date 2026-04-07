@@ -75,6 +75,7 @@ function ContentList({ data, type }: any) {
                                 <motion.button
                                     whileTap={{ scale: 1.96 }}
                                     className='flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-sm font-semibold transition-colors'
+                                    onClick={()=>router.push(`/video-kyc/${item.videoKycRoomId}`)}
                                 >
                                     Join Call <ArrowRight size={15} />
                                 </motion.button>
