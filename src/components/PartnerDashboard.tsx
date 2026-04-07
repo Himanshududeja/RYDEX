@@ -35,6 +35,7 @@ function PartnerDashboard() {
     const { userData } = useSelector((state: RootState) => state.user)
     const dispatch = useDispatch()
     const router = useRouter()
+    const [requestLoading,setRequestLoading] = useState(false)
 
     // ✅ Fetch latest user data
     const fetchUser = async () => {
@@ -141,7 +142,12 @@ function PartnerDashboard() {
                             <RejectionCard
                                 title="Video KYC Rejected"
                                 reason={userData?.VideoKycRejectionReason}
-                                actionLabel="Request Again"
+                                actionLabel={requestLoading ? "Requesting..." : "Request Again"}
+                                onAction={async ()=>{
+                                    setRequestLoading(true)
+                                    await axios.get("/api/partner/video-kyc/request")
+                                    setRequestLoading(false)
+                                }}
                             />
                         ) : userData?.videoKycStatus === "in_progress" && userData?.videoKycRoomId ? (
                             <ActionCard
