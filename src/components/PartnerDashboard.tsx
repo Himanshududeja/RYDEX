@@ -3,13 +3,15 @@ import { RootState } from '@/redux/store';
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion'
-import { Check, CheckCircle, Clock, Lock, Video } from 'lucide-react';
+import { Check, CheckCircle, Clock, Lock, Users, Video } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import RejectionCard from './RejectionCard';
 import StatusCard from './StatusCard';
 import axios from 'axios';
 import { setUserData } from '@/redux/userSlice';
 import ActionCard from './ActionCard';
+import PricingModal from './PricingModal';
+import { IVehicle } from '@/models/vehicle.model';
 
 type Step = {
     id: number,
@@ -36,6 +38,8 @@ function PartnerDashboard() {
     const dispatch = useDispatch()
     const router = useRouter()
     const [requestLoading,setRequestLoading] = useState(false)
+    const [showPricing,setShowPricing] = useState(false)
+    const [vehicleData,setVehicleData] = useState<IVehicle | null>(null)
 
     // ✅ Fetch latest user data
     const fetchUser = async () => {
@@ -57,7 +61,25 @@ function PartnerDashboard() {
         }
     }, [userData])
 
+    const handleGetPricing=async()=>{
+        try{
+            const {data} = await axios.get("/api/partner/onboarding/pricing")
+            console.log(data)
+            setVehicleData(data)
+        }catch(error){
+            console.log(error)
+        }
+    }
+
+    useEffect(()=>{
+        handleGetPricing()
+    },[])
+
     const goToStep = (step: Step) => {
+        if(step.id==6 && userData?.partnerStatus==="approved" && userData.videoKycStatus==="approved"){
+            setShowPricing(true)
+            return
+        }
         if (step.route && step.id <= activeStep) {
             router.push(step.route)
         }
@@ -165,7 +187,31 @@ function PartnerDashboard() {
                         )
                     )
                 }
+
+                {activeStep==7 && vehicleData?.status=="pending" && (
+                    <StatusCard
+                        icon={<Clock size={20}/>}
+                        title="Pricing Under Review"
+                        desc="Admin is reviewing your pricing."
+                    />
+                )}
+
+                {activeStep==7 && vehicleData?.status=="rejected" && (
+                    <RejectionCard
+                        title="Pricing Rejected"
+                        reason={vehicleData?.rejectionReason}
+                        actionLabel="Edit & Resubmit"
+                        onAction={()=>setShowPricing(true)}
+                    />
+                )}
+
             </div>
+
+            <PricingModal
+                open={showPricing}
+                onClose={()=>setShowPricing(false)}
+                data={vehicleData}
+            />
         </div>
     )
 }
